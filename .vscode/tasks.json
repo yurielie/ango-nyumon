@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build ango",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "ango"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "コンパイラ: C:\\mingw64\\bin\\g++.exe"
+        }
+    ]
+}
