@@ -5,11 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug ango",
+            "name": "Debug Caesar",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceRoot}/ango.exe",
             "args": [
+                "--algo",
+                "caesar",
+                "-t",
+                "Hello",
                 "10"
             ],
             "environment": [],
@@ -26,6 +30,32 @@
                 }
             ],
             "preLaunchTask": "build ango",
-        }
+        },
+        {
+            "name": "Debug SimpleSubstitution",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/ango.exe",
+            "args": [
+                "--algo",
+                "simpleSubstitution",
+                "-t",
+                "Hello",
+            ],
+            "environment": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "c:\\mingw64\\bin\\gdb.exe",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "build ango",
+        }   
     ]
 }

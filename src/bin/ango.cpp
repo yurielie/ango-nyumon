@@ -4,12 +4,13 @@
 #include <algorithm>
 #include <random>
 #include <boost/format.hpp>
+#include <boost/program_options.hpp>
 
 #include "cryptgraphy/caesar_cipher.hpp"
 #include "cryptgraphy/simple_substitution_cipher.hpp"
 
-bool execCaesarCipher(char* argv[], std::string message) {
-    uint8_t key = std::stoi(argv[3]);
+
+bool execCaesarCipher(uint8_t key, std::string message) {
     std::cout << "*** Caesar Cipher ***" << std::endl;
 
     int m_len = message.length();
@@ -32,11 +33,10 @@ bool execCaesarCipher(char* argv[], std::string message) {
     return true;
 }
 
-bool execSimpleSubstitutionCipher(char* argv[], std::string message) {
+bool execSimpleSubstitutionCipher(std::string message) {
     std::vector<char> charset = {};
-    for (int i = 0; i < 26; ++i) {
-        charset.push_back('a' + i);
-        charset.push_back('A' + i);
+    for (uint8_t i = 32; i < 127; ++i) {
+        charset.push_back(static_cast<char>(i));
     }
     std::vector<char> substitution = std::vector{charset};
 
@@ -56,12 +56,13 @@ bool execSimpleSubstitutionCipher(char* argv[], std::string message) {
     for (auto it = sm.left.begin(); it != sm.left.end(); ++it) {
         std::cout << it->first << " ";
     }
+    int sm_size = sm.size();
     std::cout << std::endl;
-    for (int i = 0; i < sm.size(); ++i) {
+    for (int i = 0; i < sm_size; ++i) {
         std::cout << "| ";
     }
     std::cout << std::endl;
-    for (int i = 0; i < sm.size(); ++i) {
+    for (int i = 0; i < sm_size; ++i) {
         std::cout << "V ";
     }
     std::cout << std::endl;
@@ -91,18 +92,46 @@ bool execSimpleSubstitutionCipher(char* argv[], std::string message) {
     return true;
 }
 
+
 int main(int argc, char* argv[]) {
-    if (argc < 3) {
-        std::cout << "too few argument. required 3 args at least." << std::endl;
+
+    boost::program_options::options_description opt("Ango");
+    opt.add_options()
+        ("algo,a", boost::program_options::value<std::string>(), "algorithm to en/decrypt")
+        ("text,t", boost::program_options::value<std::string>(), "text to en/decrypt")
+        ("help,h", "help");
+    
+    boost::program_options::variables_map vm;
+    boost::program_options::parsed_options parse_result = boost::program_options::parse_command_line(argc, argv, opt);
+    try {
+        boost::program_options::store(parse_result, vm);
+    } catch (std::exception &e) {
+        std::cerr << "invalid argument: " << e.what() << std::endl << opt << std::endl;
+        return 1;
+    }
+    boost::program_options::notify(vm);
+
+    if (vm.count("help")) {
+        std::cout << opt << std::endl;
+        return 1;
+    } else if (!vm.count("algo") || !vm.count("text")) {
+        std::cout << "required '--algo' and '--text' option to be select." << std::endl;
+        return 1;
     }
 
-    std::string crypt_type = std::string(argv[1]);
-    std::string plain_text = std::string(argv[2]);
+    std::vector<std::string> args = {};
+    for (auto const& s : boost::program_options::collect_unrecognized(parse_result.options, boost::program_options::include_positional)) {
+        args.push_back(s);
+    }
+
+    std::string crypt_type = vm["algo"].as<std::string>();
+    std::string plain_text = vm["text"].as<std::string>();
     bool result = false;
     if (crypt_type == "caesar") {
-        result = execCaesarCipher(argv, plain_text);
+        uint8_t key = std::stoi(args[0]);
+        result = execCaesarCipher(key, plain_text);
     } else if (crypt_type == "simpleSubstitution") {
-        result = execSimpleSubstitutionCipher(argv, plain_text);
+        result = execSimpleSubstitutionCipher(plain_text);
     }
 
     if (result == false) {

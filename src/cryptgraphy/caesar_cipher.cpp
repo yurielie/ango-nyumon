@@ -8,7 +8,8 @@ namespace ango
         }
         char k = static_cast<char>(key);
         int i = 0;
-        while (i < plain_text.length()) {
+        int p_len = plain_text.length();
+        while (i < p_len) {
             plain_text[i++] += k;
         }
 
@@ -21,7 +22,8 @@ namespace ango
         }
         char k = static_cast<char>(key);
         int i = 0;
-        while (i < cipher_text.length()) {
+        int c_len = cipher_text.length();
+        while (i < c_len) {
             cipher_text[i++] += k;
         }
 
